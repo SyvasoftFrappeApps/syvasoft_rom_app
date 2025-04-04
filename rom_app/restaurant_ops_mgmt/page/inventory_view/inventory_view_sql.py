@@ -85,6 +85,7 @@ def top_ten_items_below_min_stock_data(filters):
     FROM `tabRaw Material Only` raw
     WHERE raw.closing_stock < raw.min_stock
     ORDER BY min_difference DESC
+    LIMIT 10
     """
     full_sql = build_sql_where_condition(sql, conditions)
     print(full_sql)
