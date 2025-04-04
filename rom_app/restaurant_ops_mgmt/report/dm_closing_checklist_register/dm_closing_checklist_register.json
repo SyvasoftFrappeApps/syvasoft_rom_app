@@ -1,0 +1,26 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2024-08-03 16:16:02.277115",
+ "disabled": 1,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 9,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2024-10-30 20:04:10.754435",
+ "modified_by": "Administrator",
+ "module": "Restaurant Ops Mgmt",
+ "name": "Dm Closing Checklist Register",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Op Closing Checklist",
+ "report_name": "Dm Closing Checklist Register",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ]
+}

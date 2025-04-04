@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-09-03 08:50:48.277288",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "raw_material",
+  "unit",
+  "ord_qty",
+  "unit_price",
+  "amount",
+  "raw_material_text",
+  "unit_price_text"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "raw_material",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Raw Material",
+   "options": "Raw Material Only",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fetch_from": "raw_material.unit",
+   "fieldname": "unit",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Unit",
+   "options": "\nBag\nBot\nBox\nCase\nGm\nKg\nLtr\nKattu\nMl\nNos\nPcs\nPkt\nTin\nTray",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "ord_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Ord Qty",
+   "non_negative": 1,
+   "precision": "3"
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "unit_price",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Unit Price",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "raw_material_text",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Raw Material Text"
+  },
+  {
+   "fetch_from": "raw_material.price",
+   "fieldname": "unit_price_text",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Unit Price Text"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-08 21:40:11.188487",
+ "modified_by": "Administrator",
+ "module": "Restaurant Ops Mgmt",
+ "name": "Stock Entry Child",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-08-23 15:05:18.085710",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "user_name",
+  "remarks",
+  "column_break_ydrh",
+  "department",
+  "date",
+  "previous_date",
+  "column_break_keti",
+  "receive_date",
+  "total_price",
+  "section_break_fjsc",
+  "raw_materials"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Department",
+   "options": "Department",
+   "permlevel": 2,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ydrh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "user_fullname",
+   "fieldname": "user_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "User Name",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Total Price",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_fjsc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "raw_materials",
+   "fieldtype": "Table",
+   "label": "Raw Materials",
+   "options": "Chef Indent By Dept Child"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "receive_date",
+   "fieldtype": "Date",
+   "label": "Receive Date"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_keti",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "previous_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Previous Date"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-27 16:01:33.056946",
+ "modified_by": "Administrator",
+ "module": "Restaurant Ops Mgmt",
+ "name": "Chef Indent By Dept",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "date"
+}

@@ -1,0 +1,151 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2024-08-29 16:02:43.552066",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "branch",
+  "user_name",
+  "vendor",
+  "remarks",
+  "column_break_oiog",
+  "date",
+  "ref_no",
+  "stock_entry_template",
+  "previous_date",
+  "column_break_xgcq",
+  "bill_date",
+  "arrival_time",
+  "total_price",
+  "section_break_wqyo",
+  "raw_material_from_template"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_oiog",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "user_fullname",
+   "fieldname": "user_name",
+   "fieldtype": "Data",
+   "label": "User Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_wqyo",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "raw_material_from_template",
+   "fieldtype": "Table",
+   "label": "Raw Material From Template",
+   "options": "Stock Entry Child"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "total_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Total Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Vendor",
+   "options": "Vendor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "bill_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Bill Date"
+  },
+  {
+   "fieldname": "stock_entry_template",
+   "fieldtype": "Link",
+   "label": "Stock Entry Template",
+   "options": "Stock Entry Template Type"
+  },
+  {
+   "fieldname": "arrival_time",
+   "fieldtype": "Time",
+   "label": "Arrival Time"
+  },
+  {
+   "fieldname": "ref_no",
+   "fieldtype": "Data",
+   "label": "Ref No"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_xgcq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "previous_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Previous Date"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-27 16:01:56.273557",
+ "modified_by": "Administrator",
+ "module": "Restaurant Ops Mgmt",
+ "name": "Stock Entry",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "vendor"
+}

@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2025-01-08 18:27:26.050580",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "4_step_process_section",
+  "branch",
+  "update_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Branch",
+   "options": "Branch",
+   "reqd": 1
+  },
+  {
+   "default": "Today",
+   "description": "The \"Update Date\" must be within the range of today\u2019s date and up to 60 days prior. It cannot be a future date or exceed the 60-day limit in the past. The Inventory Summary table will be updated solely based on the specified \"Update Date\" and will not reflect intermediate dates. If you wish to view the summary for a different date, please adjust the \"Update Date\" accordingly and rerun the process.",
+   "fieldname": "update_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Update Date",
+   "reqd": 1
+  },
+  {
+   "description": "[1] Choose the Branch.  [2] Choose the Desired Date (usually it is todays's date).  [3] Save the record.  [4] Click the \"Update Inventory Summary\" Button on the top right.  [5] Wait for 10 seconds.  [6] Now you can check the \"Inventory Summary Register\" Report for the date specified in the \"Update Date\" field.",
+   "fieldname": "4_step_process_section",
+   "fieldtype": "Section Break",
+   "label": "Fast Update - 6 Step Process "
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-13 16:31:36.604628",
+ "modified_by": "Administrator",
+ "module": "Restaurant Ops Mgmt",
+ "name": "Inventory Summary Fast Update",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
