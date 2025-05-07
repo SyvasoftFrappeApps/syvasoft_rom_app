@@ -231,7 +231,8 @@ scheduler_events = {
         # "58 23 * * *": ["rom_app.scheduled_tasks.call_inventory_summary_night"],
         # "1 0 * * *": ["rom_app.scheduled_tasks.call_inventory_summary_morning"],
         "0 3 * * *": ["rom_app.scheduled_tasks.call_inventory_summary_morning_60_days_before"],
-        "5 3 * * *": ["rom_app.scheduled_tasks.call_inventory_summary_morning_for_today_with_one_time_db_write"]
+        "5 3 * * *": ["rom_app.scheduled_tasks.call_inventory_summary_morning_for_today_with_one_time_db_write"],
+         "0 4 * * *": ["rom_app.scheduled_tasks.generate_raw_material_summary"]
     }
     }
 # "58 23 * * *": ["rom_app.scheduled_tasks.inventory_summary"],
