@@ -1,0 +1,50 @@
+# Copyright (c) 2025, Pubs and contributors
+# For license information, please see license.txt
+
+import frappe
+from frappe.utils import flt
+
+def execute(filters=None):
+    columns = get_columns()
+    data = get_data(filters)
+    return columns, data
+
+def get_columns():
+    return [
+        {"label": "Branch", "fieldname": "branch", "fieldtype": "Data", "width": 150},
+        {"label": "Raw Material", "fieldname": "raw_material", "fieldtype": "Data", "width": 150},
+        {"label": "RM Group", "fieldname": "rm_group", "fieldtype": "Data", "width": 120},
+        {"label": "Qty", "fieldname": "total_qty", "fieldtype": "Float", "width": 100},
+        {"label": "Price", "fieldname": "total_price", "fieldtype": "Currency", "width": 100},
+        {"label": "Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 100},
+    ]
+
+def get_data(filters):
+    conditions = ""
+    sql_filters = {}
+
+    if filters.get("branch"):
+        conditions += " AND branch = %(branch)s"
+        sql_filters["branch"] = filters["branch"]
+
+    # if filters.get("raw_material"):
+    #     conditions += " AND raw_material = %(raw_material)s"
+    #     sql_filters["raw_material"] = filters["raw_material"]
+
+    # if filters.get("raw_material_like"):
+    #     conditions += " AND raw_material LIKE %(raw_material_like)s"
+    #     sql_filters["raw_material_like"] = filters["raw_material_like"]
+
+    if filters.get("rm_group"):
+        conditions += " AND rm_group = %(rm_group)s"
+        sql_filters["rm_group"] = filters["rm_group"]
+
+    return frappe.db.sql(f"""
+        SELECT
+            branch, raw_material, rm_group,
+            total_qty, total_price, total_amount,
+            report_date
+        FROM `tabRaw Material Summary`
+        WHERE docstatus < 2 {conditions}
+        ORDER BY report_date DESC
+    """, sql_filters, as_dict=True)
