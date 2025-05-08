@@ -12,11 +12,11 @@ def execute(filters=None):
 def get_columns():
     return [
         {"label": "Branch", "fieldname": "branch", "fieldtype": "Data", "width": 150},
-        {"label": "Raw Material", "fieldname": "raw_material", "fieldtype": "Data", "width": 150},
-        {"label": "RM Group", "fieldname": "rm_group", "fieldtype": "Data", "width": 120},
-        {"label": "Qty", "fieldname": "total_qty", "fieldtype": "Float", "width": 100},
-        {"label": "Price", "fieldname": "total_price", "fieldtype": "Currency", "width": 100},
-        {"label": "Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 100},
+        {"label": "Raw Material", "fieldname": "raw_material", "fieldtype": "Data", "width": 300},
+        {"label": "RM Group", "fieldname": "rm_group", "fieldtype": "Data", "width": 180},
+        {"label": "Qty", "fieldname": "total_qty", "fieldtype": "Float", "width": 120},
+        {"label": "Price", "fieldname": "total_price", "fieldtype": "Currency", "width": 120},
+        {"label": "Amount", "fieldname": "total_amount", "fieldtype": "Currency", "width": 130},
     ]
 
 def get_data(filters):
@@ -46,5 +46,6 @@ def get_data(filters):
             report_date
         FROM `tabRaw Material Summary`
         WHERE docstatus < 2 {conditions}
+        AND raw_material IS NOT NULL
         ORDER BY report_date DESC
     """, sql_filters, as_dict=True)
