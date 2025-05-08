@@ -873,7 +873,7 @@ def create_wastages_empty_data_frame():
         df[col] = None
     return df
 
-frappe.whitelist()
+@frappe.whitelist()
 def generate_raw_material_summary():
     today = nowdate()
     yesterday = add_days(today, -1)
