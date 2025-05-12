@@ -21,7 +21,8 @@ frappe.query_reports["Closing Stock Report"] = {
 			"fieldname": "branch",
 			"label": "Branch",
 			"fieldtype": "Link",
-			"options": "Branch"
+			"options": "Branch",
+			"reqd": 1
 		},
 		// {
 		// 	"fieldname": "raw_material",
@@ -38,7 +39,8 @@ frappe.query_reports["Closing Stock Report"] = {
 		{
 			"fieldname": "rm_group",
 			"label": "RM Group",
-			"fieldtype": "Data"
+			"fieldtype": "Link",
+			"options": "Raw Material Group"
 		}
 		]
 };

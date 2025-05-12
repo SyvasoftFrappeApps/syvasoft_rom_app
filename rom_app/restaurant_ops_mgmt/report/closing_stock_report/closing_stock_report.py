@@ -24,7 +24,7 @@ def get_data(filters):
     sql_filters = {}
 
     if filters.get("branch"):
-        conditions += " AND branch = %(branch)s"
+        conditions += " AND trms.branch = %(branch)s"
         sql_filters["branch"] = filters["branch"]
 
     # if filters.get("raw_material"):
@@ -36,16 +36,25 @@ def get_data(filters):
     #     sql_filters["raw_material_like"] = filters["raw_material_like"]
 
     if filters.get("rm_group"):
-        conditions += " AND rm_group = %(rm_group)s"
+        conditions += " AND trmg.name = %(rm_group)s"
         sql_filters["rm_group"] = filters["rm_group"]
 
     return frappe.db.sql(f"""
         SELECT
-            branch, raw_material, rm_group,
-            total_qty, total_price, total_amount,
-            report_date
-        FROM `tabRaw Material Summary`
-        WHERE docstatus < 2 {conditions}
-        AND raw_material IS NOT NULL
-        ORDER BY report_date DESC
+            trms.branch,
+            trms.raw_material,
+            trms.rm_group,
+            trms.total_qty,
+            trms.total_price,
+            trms.total_amount,
+            trms.report_date
+        FROM
+            `tabRaw Material Summary` trms
+        LEFT JOIN `tabRaw Material Group` trmg ON
+            trmg.group_name = trms.rm_group
+        WHERE
+            trms.docstatus < 2 {conditions}
+            AND trms.raw_material IS NOT NULL
+        ORDER BY
+            report_date DESC
     """, sql_filters, as_dict=True)
