@@ -919,7 +919,7 @@ def generate_raw_material_summary():
                 LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
                 LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
 
-                UNION
+                UNION ALL
 
                 SELECT
                     "Indent" as trans_type,
@@ -939,7 +939,7 @@ def generate_raw_material_summary():
                 LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
                 LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
 
-                UNION
+                UNION ALL
 
                 SELECT
                     "Waste" as trans_type,
