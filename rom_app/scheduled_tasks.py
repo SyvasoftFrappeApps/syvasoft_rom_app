@@ -892,75 +892,92 @@ def generate_raw_material_summary():
 
     # Main aggregation query
     query = """
-        SELECT
-            utr.branch,
-            utr.raw_material,
-            utr.rm_group,
-            SUM(utr.qty) AS total_qty,
-            SUM(utr.price) AS total_price,
-            SUM(utr.amount) AS total_amount
-        FROM (
             SELECT
-                "Stock" as trans_type,
-                par.name,
-                par.date,
-                par.branch,
-                par.user_name,
-                raw.item as raw_material,
-                chi.unit,
-                chi.ord_qty as qty,
-                chi.unit_price AS price,
-                chi.amount,
-                rmgrp.group_name as rm_group,
-                ven.template_type_name as vendor_name
-            FROM `tabStock Entry` par
-            LEFT JOIN `tabStock Entry Child` chi ON chi.parent = par.name
-            LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-            LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
-            LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
+                utr.branch,
+                utr.raw_material,
+                utr.rm_group,
+                IFNULL(SUM(utr.qty), 0) AS total_qty,
+                IFNULL(latest.unit_price, 0) AS total_price,
+                IFNULL(SUM(utr.qty), 0) * IFNULL(latest.unit_price, 0) AS total_amount
+            FROM (
+                SELECT
+                    "Stock" as trans_type,
+                    par.name,
+                    par.date,
+                    par.branch,
+                    par.user_name,
+                    raw.item as raw_material,
+                    chi.unit,
+                    chi.ord_qty as qty,
+                    chi.unit_price AS price,
+                    chi.amount,
+                    rmgrp.group_name as rm_group,
+                    ven.template_type_name as vendor_name
+                FROM `tabStock Entry` par
+                LEFT JOIN `tabStock Entry Child` chi ON chi.parent = par.name
+                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+                LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
 
-            UNION ALL
+                UNION
 
-            SELECT
-                "Indent" as trans_type,
-                par.name,
-                par.date,
-                par.branch,
-                par.user_name,
-                raw.item as raw_material,
-                chi.unit,
-                chi.issued_qty as qty,
-                chi.price,
-                chi.amount,
-                rmgrp.group_name as rm_group,
-                '' as vendor_name
-            FROM `tabChef Indent By Dept` par
-            LEFT JOIN `tabChef Indent By Dept Child` chi ON par.name = chi.parent
-            LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-            LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+                SELECT
+                    "Indent" as trans_type,
+                    par.name,
+                    par.date,
+                    par.branch,
+                    par.user_name,
+                    raw.item as raw_material,
+                    chi.unit,
+                    chi.issued_qty as qty,
+                    chi.price,
+                    chi.amount,
+                    rmgrp.group_name as rm_group,
+                    '' as vendor_name
+                FROM `tabChef Indent By Dept` par
+                LEFT JOIN `tabChef Indent By Dept Child` chi ON par.name = chi.parent
+                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
 
-            UNION ALL
+                UNION
 
-            SELECT
-                "Waste" as trans_type,
-                par.name,
-                par.date,
-                par.branch,
-                par.user_name,
-                raw.item as raw_material,
-                chi.unit,
-                chi.wastage_qty as qty,
-                chi.unit_price as price,
-                chi.amount,
-                rmgrp.group_name as rm_group,
-                '' as vendor_name
-            FROM `tabInventory Wastage` par
-            LEFT JOIN `tabInventory Wastage Child` chi ON chi.parent = par.name
-            LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-            LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
-        ) AS utr
-        WHERE date BETWEEN '2024-11-01' AND %s
-        GROUP BY utr.branch, utr.raw_material, utr.rm_group
+                SELECT
+                    "Waste" as trans_type,
+                    par.name,
+                    par.date,
+                    par.branch,
+                    par.user_name,
+                    raw.item as raw_material,
+                    chi.unit,
+                    chi.wastage_qty as qty,
+                    chi.unit_price as price,
+                    chi.amount,
+                    rmgrp.group_name as rm_group,
+                    '' as vendor_name
+                FROM `tabInventory Wastage` par
+                LEFT JOIN `tabInventory Wastage Child` chi ON chi.parent = par.name
+                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+            ) AS utr
+
+            LEFT JOIN (
+                SELECT
+                    raw.item AS raw_material,
+                    chi.unit_price,
+                    ROW_NUMBER() OVER (PARTITION BY raw.item ORDER BY par.date DESC) AS rn
+                FROM `tabStock Entry` par
+                JOIN `tabStock Entry Child` chi ON par.name = chi.parent
+                JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+            ) AS latest ON latest.raw_material = utr.raw_material AND latest.rn = 1
+
+            WHERE
+                utr.date BETWEEN '2024-11-01' AND %s
+
+            GROUP BY
+                utr.branch,
+                utr.raw_material,
+                utr.rm_group,
+                latest.unit_price;
     """
 
     results = frappe.db.sql(query, values=[today], as_dict=True)
