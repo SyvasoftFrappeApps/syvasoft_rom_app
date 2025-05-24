@@ -877,10 +877,17 @@ def create_wastages_empty_data_frame():
 def generate_raw_material_summary(branch=None, date=None):
     today = nowdate()
     target_date = date or today  # Use provided date or fallback to today
-    yesterday = add_days(today, -1)
+
     # Clean old summary entries
-    frappe.db.sql("""DELETE FROM `tabRaw Material Summary` WHERE report_date = %s""", yesterday)
-    frappe.db.sql("""DELETE FROM `tabRaw Material Summary` WHERE report_date = %s""", today)
+    if branch:
+        # Delete only filtered records
+        frappe.db.sql("""
+            DELETE FROM `tabRaw Material Summary`
+            WHERE branch = %s
+        """, (branch))
+    else:
+    # Truncate entire table
+        frappe.db.sql("TRUNCATE TABLE `tabRaw Material Summary`")
 
     # Subqueries (same as before)
     union_sql = """
