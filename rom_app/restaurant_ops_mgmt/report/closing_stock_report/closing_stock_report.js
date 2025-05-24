@@ -4,8 +4,25 @@
 frappe.query_reports["Closing Stock Report"] = {
 	onload: function (report) {
 		report.page.add_inner_button("Generate Closing Stock Summary", function () {
+			const branch = report.get_filter_value('branch');
+			const date = report.get_filter_value('date');
+
+			// Validation
+			if (!branch || !date) {
+				frappe.msgprint({
+					title: "Missing Filters",
+					message: "Please select both <b>Branch</b> and <b>Date</b> before generating the summary.",
+					indicator: "red"
+				});
+				return;
+			}
+
 			frappe.call({
 				method: "rom_app.scheduled_tasks.generate_raw_material_summary",
+				args: {
+					branch: branch,
+					date: date
+				},
 				freeze: true,
 				freeze_message: "Processing Closing Stock...",
 				callback: function (r) {
@@ -16,6 +33,7 @@ frappe.query_reports["Closing Stock Report"] = {
 			});
 		});
 	},
+
 	"filters": [
 		{
 			"fieldname": "branch",
@@ -24,23 +42,18 @@ frappe.query_reports["Closing Stock Report"] = {
 			"options": "Branch",
 			"reqd": 1
 		},
-		// {
-		// 	"fieldname": "raw_material",
-		// 	"label": "Raw Material",
-		// 	"fieldtype": "Link",
-		// 	"options": "Raw Material Only"
-		// },
-		// {
-		// 	"fieldname": "raw_material_like",
-		// 	"label": "Raw Material (Like)",
-		// 	"fieldtype": "Data",
-		// 	"description": "Wildcard filter, e.g. %zucc%"
-		// },
 		{
 			"fieldname": "rm_group",
 			"label": "RM Group",
 			"fieldtype": "Link",
 			"options": "Raw Material Group"
-		}
+		},
+		{
+			"fieldname": "date",
+			"label": "Date",
+			"fieldtype": "Date",
+			"default": frappe.datetime.now_date(),
+			"mandatory": 1
+		},
 		]
 };

@@ -874,115 +874,95 @@ def create_wastages_empty_data_frame():
     return df
 
 @frappe.whitelist()
-def generate_raw_material_summary():
+def generate_raw_material_summary(branch=None, date=None):
     today = nowdate()
+    target_date = date or today  # Use provided date or fallback to today
     yesterday = add_days(today, -1)
+    # Clean old summary entries
+    frappe.db.sql("""DELETE FROM `tabRaw Material Summary` WHERE report_date = %s""", yesterday)
+    frappe.db.sql("""DELETE FROM `tabRaw Material Summary` WHERE report_date = %s""", today)
 
-    # Remove old entries (yesterday's report)
-    frappe.db.sql("""
-        DELETE FROM `tabRaw Material Summary`
-        WHERE report_date = %s
-    """, yesterday)
+    # Subqueries (same as before)
+    union_sql = """
+        SELECT
+            "Stock" AS trans_type, par.name, par.date, par.branch, par.user_name,
+            raw.item AS raw_material, chi.unit, chi.ord_qty AS qty, chi.unit_price AS price,
+            chi.amount, rmgrp.group_name AS rm_group, ven.template_type_name AS vendor_name
+        FROM `tabStock Entry` par
+        LEFT JOIN `tabStock Entry Child` chi ON chi.parent = par.name
+        LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+        LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+        LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
 
-    # (optional) Remove today's data if re-generating multiple times
-    frappe.db.sql("""
-        DELETE FROM `tabRaw Material Summary`
-        WHERE report_date = %s
-    """, today)
+        UNION ALL
 
-    # Main aggregation query
-    query = """
-            SELECT
-                utr.branch,
-                utr.raw_material,
-                utr.rm_group,
-                IFNULL(SUM(utr.qty), 0) AS total_qty,
-                IFNULL(latest.unit_price, 0) AS total_price,
-                IFNULL(SUM(utr.qty), 0) * IFNULL(latest.unit_price, 0) AS total_amount
-            FROM (
-                SELECT
-                    "Stock" as trans_type,
-                    par.name,
-                    par.date,
-                    par.branch,
-                    par.user_name,
-                    raw.item as raw_material,
-                    chi.unit,
-                    chi.ord_qty as qty,
-                    chi.unit_price AS price,
-                    chi.amount,
-                    rmgrp.group_name as rm_group,
-                    ven.template_type_name as vendor_name
-                FROM `tabStock Entry` par
-                LEFT JOIN `tabStock Entry Child` chi ON chi.parent = par.name
-                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
-                LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
+        SELECT
+            "Indent", par.name, par.date, par.branch, par.user_name,
+            raw.item, chi.unit, chi.issued_qty, chi.price, chi.amount,
+            rmgrp.group_name, '' 
+        FROM `tabChef Indent By Dept` par
+        LEFT JOIN `tabChef Indent By Dept Child` chi ON chi.parent = par.name
+        LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+        LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
 
-                UNION ALL
+        UNION ALL
 
-                SELECT
-                    "Indent" as trans_type,
-                    par.name,
-                    par.date,
-                    par.branch,
-                    par.user_name,
-                    raw.item as raw_material,
-                    chi.unit,
-                    chi.issued_qty as qty,
-                    chi.price,
-                    chi.amount,
-                    rmgrp.group_name as rm_group,
-                    '' as vendor_name
-                FROM `tabChef Indent By Dept` par
-                LEFT JOIN `tabChef Indent By Dept Child` chi ON par.name = chi.parent
-                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
-
-                UNION ALL
-
-                SELECT
-                    "Waste" as trans_type,
-                    par.name,
-                    par.date,
-                    par.branch,
-                    par.user_name,
-                    raw.item as raw_material,
-                    chi.unit,
-                    chi.wastage_qty as qty,
-                    chi.unit_price as price,
-                    chi.amount,
-                    rmgrp.group_name as rm_group,
-                    '' as vendor_name
-                FROM `tabInventory Wastage` par
-                LEFT JOIN `tabInventory Wastage Child` chi ON chi.parent = par.name
-                LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-                LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
-            ) AS utr
-
-            LEFT JOIN (
-                SELECT
-                    raw.item AS raw_material,
-                    chi.unit_price,
-                    ROW_NUMBER() OVER (PARTITION BY raw.item ORDER BY par.date DESC) AS rn
-                FROM `tabStock Entry` par
-                JOIN `tabStock Entry Child` chi ON par.name = chi.parent
-                JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
-            ) AS latest ON latest.raw_material = utr.raw_material AND latest.rn = 1
-
-            WHERE
-                utr.date BETWEEN '2024-11-01' AND %s
-
-            GROUP BY
-                utr.branch,
-                utr.raw_material,
-                utr.rm_group,
-                latest.unit_price;
+        SELECT
+            "Waste", par.name, par.date, par.branch, par.user_name,
+            raw.item, chi.unit, chi.wastage_qty, chi.unit_price, chi.amount,
+            rmgrp.group_name, ''
+        FROM `tabInventory Wastage` par
+        LEFT JOIN `tabInventory Wastage Child` chi ON chi.parent = par.name
+        LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+        LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
     """
 
-    results = frappe.db.sql(query, values=[today], as_dict=True)
+    latest_sql = """
+        SELECT
+            raw.item AS raw_material,
+            chi.unit_price,
+            ROW_NUMBER() OVER (PARTITION BY raw.item ORDER BY par.date DESC) AS rn
+        FROM `tabStock Entry` par
+        JOIN `tabStock Entry Child` chi ON par.name = chi.parent
+        JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+    """
+
+    # WHERE clause logic
+    where_clauses = ["utr.date BETWEEN '2024-11-01' AND %s"]
+    values = [target_date]
+
+    if branch:
+        where_clauses.append("utr.branch = %s")
+        values.append(branch)
+
+    final_sql = f"""
+        SELECT
+            utr.branch,
+            utr.raw_material,
+            utr.rm_group,
+            IFNULL(SUM(utr.qty), 0) AS total_qty,
+            IFNULL(latest.unit_price, 0) AS total_price,
+            IFNULL(SUM(utr.qty), 0) * IFNULL(latest.unit_price, 0) AS total_amount
+        FROM (
+            {union_sql}
+        ) AS utr
+        LEFT JOIN (
+            {latest_sql}
+        ) AS latest
+          ON latest.raw_material = utr.raw_material
+         AND latest.rn = 1
+        WHERE {" AND ".join(where_clauses)}
+        GROUP BY
+            utr.branch,
+            utr.raw_material,
+            utr.rm_group,
+            latest.unit_price
+    """
+
+    results = frappe.db.sql(final_sql, values=values, as_dict=True)
+
     for row in results:
-        doc = frappe.get_doc({
+        frappe.get_doc({
             "doctype": "Raw Material Summary",
             "branch": row.branch,
             "raw_material": row.raw_material,
@@ -990,8 +970,7 @@ def generate_raw_material_summary():
             "total_qty": row.total_qty,
             "total_price": row.total_price,
             "total_amount": row.total_amount,
-            "report_date": today
-        })
-        doc.insert(ignore_permissions=True)
+            "report_date": today  # still use today's date for report timestamp
+        }).insert(ignore_permissions=True)
 
     frappe.db.commit()
