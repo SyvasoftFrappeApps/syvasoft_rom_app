@@ -108,13 +108,14 @@
    "fetch_from": "rm_group.group_name",
    "fieldname": "rm_group_name",
    "fieldtype": "Data",
-   "label": "RM Group Name"
+   "label": "RM Group Name",
+   "read_only": 1
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-30 18:33:31.526648",
+ "modified": "2025-05-30 18:43:48.800005",
  "modified_by": "Administrator",
  "module": "Restaurant Ops Mgmt",
  "name": "Raw Material Only",
