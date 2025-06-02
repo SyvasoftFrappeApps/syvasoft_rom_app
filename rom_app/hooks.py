@@ -87,6 +87,9 @@ fixtures = [
                             "SampleDoc Register",
                         ]],
                      }
+    },
+    {
+        "dt": "Translation"
     }
 ]
 
