@@ -884,13 +884,16 @@ def generate_raw_material_summary(branch=None, date=None):
         frappe.db.sql("""
             DELETE FROM `tabRaw Material Summary`
             WHERE branch = %s
-        """, (branch))
+        """, (branch,))
     else:
     # Truncate entire table
         frappe.db.sql("TRUNCATE TABLE `tabRaw Material Summary`")
 
     # Subqueries (same as before)
-    union_sql = """
+
+    # branch_filter = "WHERE par.branch = %s" if branch else ""
+
+    union_sql = f"""
         SELECT
             "Stock" AS trans_type, par.name, par.date, par.branch, par.user_name,
             raw.item AS raw_material, chi.unit, chi.ord_qty AS qty, chi.unit_price AS price,
@@ -925,17 +928,20 @@ def generate_raw_material_summary(branch=None, date=None):
     """
 
     latest_sql = """
-        SELECT
-            raw.item AS raw_material,
-            chi.unit_price,
-            ROW_NUMBER() OVER (PARTITION BY raw.item ORDER BY par.date DESC) AS rn
-        FROM `tabStock Entry` par
-        JOIN `tabStock Entry Child` chi ON par.name = chi.parent
-        JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+        SELECT * FROM (
+            SELECT
+                raw.item AS raw_material,
+                chi.unit_price,
+                ROW_NUMBER() OVER (PARTITION BY raw.item ORDER BY par.date DESC) AS rn
+            FROM `tabStock Entry` par
+            JOIN `tabStock Entry Child` chi ON par.name = chi.parent
+            JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
+        ) AS ranked_prices
+        WHERE rn = 1
     """
 
     # WHERE clause logic
-    where_clauses = ["utr.date BETWEEN '2024-11-01' AND %s"]
+    where_clauses = ["utr.raw_material IS NOT NULL", "utr.date BETWEEN '2024-11-01' AND %s"]
     values = [target_date]
 
     if branch:
@@ -947,7 +953,7 @@ def generate_raw_material_summary(branch=None, date=None):
             utr.branch,
             utr.raw_material,
             utr.rm_group,
-            IFNULL(SUM(utr.qty), 0) AS total_qty,
+            IFNULL(SUM(utr.qty), 0) AS total_qty,n 
             IFNULL(latest.unit_price, 0) AS total_price,
             IFNULL(SUM(utr.qty), 0) * IFNULL(latest.unit_price, 0) AS total_amount
         FROM (
@@ -957,7 +963,6 @@ def generate_raw_material_summary(branch=None, date=None):
             {latest_sql}
         ) AS latest
           ON latest.raw_material = utr.raw_material
-         AND latest.rn = 1
         WHERE {" AND ".join(where_clauses)}
         GROUP BY
             utr.branch,

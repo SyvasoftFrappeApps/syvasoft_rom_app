@@ -50,8 +50,6 @@ def get_data(filters):
             trms.report_date
         FROM
             `tabRaw Material Summary` trms
-        LEFT JOIN `tabRaw Material Group` trmg ON
-            trmg.group_name = trms.rm_group
         WHERE
             trms.docstatus < 2 {conditions}
             AND trms.raw_material IS NOT NULL
