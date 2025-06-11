@@ -901,7 +901,7 @@ def generate_raw_material_summary(branch=None, date=None):
         LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
         LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
 
-        UNION ALL
+        UNION
 
         SELECT
             "Indent", par.name, par.date, par.branch, par.user_name,
@@ -912,7 +912,7 @@ def generate_raw_material_summary(branch=None, date=None):
         LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
         LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
 
-        UNION ALL
+        UNION
 
         SELECT
             "Waste", par.name, par.date, par.branch, par.user_name,
