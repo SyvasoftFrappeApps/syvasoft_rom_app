@@ -7,11 +7,13 @@
  "engine": "InnoDB",
  "field_order": [
   "branch",
+  "item_code",
   "item",
   "unit",
   "rm_group",
   "rm_group_name",
   "column_break_vwfd",
+  "disabled",
   "date",
   "min_stock",
   "price",
@@ -110,15 +112,29 @@
    "fieldtype": "Data",
    "label": "RM Group Name",
    "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
+ "grid_page_length": 50,
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-30 18:43:48.800005",
+ "modified": "2025-06-11 18:49:04.709865",
  "modified_by": "Administrator",
  "module": "Restaurant Ops Mgmt",
  "name": "Raw Material Only",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
