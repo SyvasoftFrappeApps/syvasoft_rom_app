@@ -891,8 +891,6 @@ def generate_raw_material_summary(branch=None, date=None):
 
     # Subqueries (same as before)
 
-    # branch_filter = "WHERE par.branch = %s" if branch else ""
-
     union_sql = f"""
         SELECT
             "Stock" AS trans_type, par.name, par.date, par.branch, par.user_name,
@@ -953,7 +951,7 @@ def generate_raw_material_summary(branch=None, date=None):
             utr.branch,
             utr.raw_material,
             utr.rm_group,
-            IFNULL(SUM(utr.qty), 0) AS total_qty,n 
+            IFNULL(SUM(utr.qty), 0) AS total_qty,
             IFNULL(latest.unit_price, 0) AS total_price,
             IFNULL(SUM(utr.qty), 0) * IFNULL(latest.unit_price, 0) AS total_amount
         FROM (
