@@ -122,9 +122,18 @@ def get_data(filters):
     print(conditions)
     build_sql_1 = """
     SELECT
-        ci.`name`, ci.`date`, ci.user_name,	ci.branch,	d.department_name,
-        raw.item, cic.unit,	cic.req_qty, cic.issued_qty,
-        cic.price, cic.amount, ci.remarks
+        ci.`name`,
+        ci.`date`,
+        ci.user_name,
+        ci.branch,
+        d.department_name,
+        raw.item, 
+        cic.unit,
+        cic.req_qty, 
+        cic.issued_qty,
+        cic.price, 
+        (cic.issued_qty * cic.price) as amount, 
+        ci.remarks
     FROM
         `tabChef Indent By Dept` ci
     LEFT JOIN `tabChef Indent By Dept Child` cic on
