@@ -890,6 +890,10 @@ def generate_raw_material_summary(branch=None, date=None):
         frappe.db.sql("TRUNCATE TABLE `tabRaw Material Summary`")
 
     # Subqueries (same as before)
+    if branch:
+        branch_filter = (f"WHERE par.branch = '{branch}'")
+    else:
+        branch_filter = " "
 
     union_sql = f"""
         SELECT
@@ -901,6 +905,7 @@ def generate_raw_material_summary(branch=None, date=None):
         LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
         LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
         LEFT JOIN `tabVendor` ven ON par.vendor = ven.name
+        {branch_filter}
 
         UNION
 
@@ -912,6 +917,7 @@ def generate_raw_material_summary(branch=None, date=None):
         LEFT JOIN `tabChef Indent By Dept Child` chi ON chi.parent = par.name
         LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
         LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+        {branch_filter}
 
         UNION
 
@@ -923,6 +929,7 @@ def generate_raw_material_summary(branch=None, date=None):
         LEFT JOIN `tabInventory Wastage Child` chi ON chi.parent = par.name
         LEFT JOIN `tabRaw Material Only` raw ON chi.raw_material = raw.name
         LEFT JOIN `tabRaw Material Group` rmgrp ON raw.rm_group = rmgrp.name
+        {branch_filter}
     """
 
     latest_sql = """
