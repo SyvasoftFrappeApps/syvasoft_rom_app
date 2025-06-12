@@ -116,8 +116,7 @@
   {
    "fieldname": "item_code",
    "fieldtype": "Data",
-   "label": "Item Code",
-   "reqd": 1
+   "label": "Item Code"
   },
   {
    "default": "0",
@@ -130,7 +129,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-11 18:49:04.709865",
+ "modified": "2025-06-12 15:02:08.540684",
  "modified_by": "Administrator",
  "module": "Restaurant Ops Mgmt",
  "name": "Raw Material Only",
