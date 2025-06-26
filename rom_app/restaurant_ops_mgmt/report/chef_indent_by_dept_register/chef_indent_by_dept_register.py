@@ -21,7 +21,7 @@ def execute(filters=None):
             'item': d.item,
             'unit': d.unit,
             'req_qty': d.req_qty,
-            'issued_qty': d.issued_qty,
+            'issued_qty': d.issu_qty_entry,
             # 'rm_approval': d.rm_approval,
             'price': d.price,
             'amount': d.amount,
@@ -130,9 +130,9 @@ def get_data(filters):
         raw.item, 
         cic.unit,
         cic.req_qty, 
-        cic.issued_qty,
+        cic.issu_qty_entry,
         cic.price, 
-        (cic.issued_qty * cic.price) as amount, 
+        (cic.issu_qty_entry * cic.price) as amount, 
         ci.remarks
     FROM
         `tabChef Indent By Dept` ci
@@ -201,7 +201,7 @@ def get_data_by_group_by_date(filters):
     print(conditions)
 
     build_sql_1 = """
-    SELECT ci.`date`, cic.req_qty, cic.issued_qty
+    SELECT ci.`date`, cic.req_qty, cic.issu_qty_entry
     FROM `tabChef Indent By Dept` ci
     INNER JOIN `tabChef Indent By Dept Child` cic on ci.name = cic.parent
     """
