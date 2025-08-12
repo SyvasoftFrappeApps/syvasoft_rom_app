@@ -36,7 +36,7 @@ def get_data(filters):
     #     sql_filters["raw_material_like"] = filters["raw_material_like"]
 
     if filters.get("rm_group"):
-        conditions += " AND trms.name = %(rm_group)s"
+        conditions += " AND rmg.name = %(rm_group)s"
         sql_filters["rm_group"] = filters["rm_group"]
 
     return frappe.db.sql(f"""
@@ -50,6 +50,10 @@ def get_data(filters):
             trms.report_date
         FROM
             `tabRaw Material Summary` trms
+        LEFT JOIN
+        	`tabRaw Material Group` rmg
+        ON
+        	trms.rm_group = rmg.group_name
         WHERE
             trms.docstatus < 2 {conditions}
             AND trms.raw_material IS NOT NULL
