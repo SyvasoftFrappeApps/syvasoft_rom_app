@@ -36,7 +36,7 @@ def get_data(filters):
     #     sql_filters["raw_material_like"] = filters["raw_material_like"]
 
     if filters.get("rm_group"):
-        conditions += " AND trmg.name = %(rm_group)s"
+        conditions += " AND trms.name = %(rm_group)s"
         sql_filters["rm_group"] = filters["rm_group"]
 
     return frappe.db.sql(f"""
